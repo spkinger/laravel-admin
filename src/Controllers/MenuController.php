@@ -56,9 +56,7 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        return redirect()->action(
-            '\Encore\Admin\Controllers\MenuController@edit', ['id' => $id]
-        );
+        return redirect()->route('menu.edit', ['id' => $id]);
     }
 
     /**
@@ -73,7 +71,12 @@ class MenuController extends Controller
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
                 if (!isset($branch['children'])) {
-                    $uri = admin_base_path($branch['uri']);
+
+                    if (url()->isValidUrl($branch['uri'])) {
+                        $uri = $branch['uri'];
+                    } else {
+                        $uri = admin_base_path($branch['uri']);
+                    }
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }

@@ -167,6 +167,11 @@ class Grid
     ];
 
     /**
+     * @var Tools\Footer
+     */
+    protected $footer;
+
+    /**
      * Create a new grid instance.
      *
      * @param Eloquent $model
@@ -267,7 +272,7 @@ class Grid
 
             $label = empty($label) ? ucfirst($relationColumn) : $label;
 
-            $name = snake_case($relationName).'.'.$relationColumn;
+            $name = $relationName.'.'.$relationColumn;
         }
 
         $column = $this->addColumn($name, $label);
@@ -712,8 +717,13 @@ class Grid
         return new Tools\CreateButton($this);
     }
 
-    protected $footer;
-
+    /**
+     * Set grid footer.
+     *
+     * @param Closure|null $closure
+     *
+     * @return $this|Tools\Footer
+     */
     public function footer(Closure $closure = null)
     {
         if (!$closure) {
@@ -725,6 +735,11 @@ class Grid
         return $this;
     }
 
+    /**
+     * Render grid footer.
+     *
+     * @return Tools\Footer|string
+     */
     public function renderFooter()
     {
         if (!$this->footer) {
@@ -754,7 +769,6 @@ class Grid
         }
 
         return app('request')->getPathInfo();
-        //return app('router')->current()->getPath();
     }
 
     /**
@@ -830,13 +844,13 @@ class Grid
         if ($relation instanceof HasOne || $relation instanceof BelongsTo) {
             $this->model()->with($method);
 
-            return $this->addColumn($method, $label)->setRelation(snake_case($method));
+            return $this->addColumn($method, $label)->setRelation($method);
         }
 
         if ($relation instanceof HasMany || $relation instanceof BelongsToMany || $relation instanceof MorphToMany) {
             $this->model()->with($method);
 
-            return $this->addColumn(snake_case($method), $label);
+            return $this->addColumn($method, $label);
         }
 
         return false;
